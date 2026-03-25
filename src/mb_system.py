@@ -35,7 +35,7 @@ def run_mbsystem_processing(
             "./mbs.sh",
             "mbmosaic",
             "-A4",                                  # Datatype 4: Sidescan
-            f"-I{datalist_path}",                   # Input datalist (ensure format ID 211 is used inside)
+            f"-I{datalist_path}",                   # Input datalist
             bounds_str,                             # Bounds
             f"-C{clip}",                            # Clip for spline interpolation
             "-N",                                   # Set empty cells to NaN
@@ -54,14 +54,17 @@ def run_mbsystem_processing(
                 "gmt",
                 "grd2cpt",
                 grd_file,
-                f"-C{colormap}"
-            ], stdout=f, check=True)
+                f"-C{colormap}",
+                "-M",
+                "--COLOR_NAN=white",
+                "--COLOR_BACKGROUND=white",
+                "--COLOR_FOREGROUND=white"
+            ], stdout=f, stderr=subprocess.DEVNULL, check=True)
 
         if not os.path.exists(cpt_file):
             raise FileNotFoundError(f"CPT file not found: {cpt_file}")
 
         tif_file = f"{grid_name}.tif"
-
         subprocess.run([
             "./mbs.sh",
             "gmt",
@@ -69,7 +72,7 @@ def run_mbsystem_processing(
             grd_file,
             f"-C{cpt_file}",
             f"-A{tif_file}"
-        ], capture_output=True, text=True, check=True)
+        ], stderr=subprocess.DEVNULL, check=True)
 
         if not os.path.exists(tif_file):
             raise FileNotFoundError(f"TIF file not found: {tif_file}")
