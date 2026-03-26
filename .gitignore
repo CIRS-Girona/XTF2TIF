@@ -4,6 +4,7 @@ gmt.history
 data/
 output/
 test/
+temp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
