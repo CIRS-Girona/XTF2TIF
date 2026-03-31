@@ -5,7 +5,6 @@
 ## 🚀 Key Features
 
 * **Advanced Intensity Correction:** Includes Time Varied Gain (TVG), Lambert’s Law correction, and Beam Pattern compensation.
-* **Percentile Clipping:** Smart contrast stretching that ignores outliers to preserve seafloor texture.
 * **Automated MB-System Integration:** Automatically handles MB-System commands via Docker to produce georeferenced mosaics.
 * **Config-Driven Workflow:** Manage all survey parameters (offsets, installation angles, EPSG codes) from a single YAML file.
 

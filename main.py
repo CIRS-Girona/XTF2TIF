@@ -22,18 +22,19 @@ def main(xtf_file: str, cfg: dict):
         if pipe_cfg['inspect_xtfs']:
             inspect_xtf(xtf_file, fh, packet, cfg['output_dir'])
 
-        # Apply Intensity Corrections
-        if pipe_cfg['apply_corrections']:
-            pings = correct_pings(
-                pings,
-                **corr_cfg  # Unpacks all keys from the corrections section
-            )
+        if not os.path.exists(output_xtf_path):
+            # Apply Intensity Corrections
+            if pipe_cfg['apply_corrections']:
+                pings = correct_pings(
+                    pings,
+                    **corr_cfg  # Unpacks all keys from the corrections section
+                )
 
-        # Save corrected XTF
-        with open(output_xtf_path, 'wb') as f:
-            f.write(fh.to_bytes())
-            for p in pings:
-                f.write(p.to_bytes())
+            # Save corrected XTF
+            with open(output_xtf_path, 'wb') as f:
+                f.write(fh.to_bytes())
+                for p in pings:
+                    f.write(p.to_bytes())
 
         # MBSystem Post-Processing
         if pipe_cfg['run_mbsystem']:

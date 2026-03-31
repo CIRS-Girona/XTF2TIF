@@ -3,6 +3,8 @@ from typing import List, Any
 
 from .utils import compute_theta_gamma, beam_pattern_from_gamma, tvg_gain
 
+SCALE_FACTOR = 65535.0  # Max value for uint16 to scale corrected intensities
+
 
 def _get_attr(obj, candidates, default=np.nan):
     """Helper function to get attribute from object with multiple candidate names"""
@@ -54,9 +56,9 @@ def process_channel(
     if normalize_gain:
         gain /= np.max(gain)
 
-    I_raw = xtf_ping.data[ch].astype(np.float64) / 16384.0
+    I_raw = xtf_ping.data[ch].astype(np.float64) / SCALE_FACTOR
     I_corrected = I_raw * gain[0]
-    I_log = np.log1p(I_corrected * 16384.0)
+    I_log = np.log1p(I_corrected * SCALE_FACTOR)
     I_log[I_log < 0] = 0
 
     return I_log
@@ -68,6 +70,7 @@ def correct_pings(
     install_angle: float,
     tvg_k: float,
     tvg_alpha: float,
+    contrast_limit: float,
     apply_water_mask: bool,
     normalize_gain: bool
 ) -> List[Any]:
@@ -110,8 +113,9 @@ def correct_pings(
 
             pings[-1].data[ch] = I_log
 
+    contrast_factor = np.power(2, np.log2(SCALE_FACTOR + 1) * contrast_limit) - 1
     for i in range(len(pings)):
         for ch in (0, 1):
-            pings[i].data[ch] = (65535.0 * (pings[i].data[ch] - min_val) / (max_val - min_val)).astype(np.uint16)
+            pings[i].data[ch] = (contrast_factor * (pings[i].data[ch] - min_val) / (max_val - min_val)).astype(np.uint16)
 
     return pings

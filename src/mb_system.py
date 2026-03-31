@@ -31,7 +31,7 @@ def run_mbsystem_processing(
     grid_name = os.path.join(output_dir, f"{label}")
     try:
         # Run mbmosaic
-        subprocess.run([
+        subprocess.run((
             "./mbs.sh",
             "mbmosaic",
             "-A4",                                  # Datatype 4: Sidescan
@@ -41,7 +41,7 @@ def run_mbsystem_processing(
             "-N",                                   # Set empty cells to NaN
             f"-E{resolution}/{resolution}/meters",  # Grid resolution
             f"-O{grid_name}"                        # Output prefix
-        ], capture_output=True, text=True, check=True)
+        ), capture_output=True, text=True, check=True)
 
         grd_file = f"{grid_name}.grd"
         if not os.path.exists(grd_file):
@@ -49,30 +49,27 @@ def run_mbsystem_processing(
 
         cpt_file = f"{grid_name}.cpt"
         with open(cpt_file, 'w') as f:
-            subprocess.run([
+            subprocess.run((
                 "./mbs.sh",
                 "gmt",
                 "grd2cpt",
                 grd_file,
-                f"-C{colormap}",
-                "-M",
-                "--COLOR_NAN=white",
-                "--COLOR_BACKGROUND=white",
-                "--COLOR_FOREGROUND=white"
-            ], stdout=f, stderr=subprocess.DEVNULL, check=True)
+                f"-C{colormap}"
+            ), stdout=f, stderr=subprocess.DEVNULL, check=True)
 
         if not os.path.exists(cpt_file):
             raise FileNotFoundError(f"CPT file not found: {cpt_file}")
 
         tif_file = f"{grid_name}.tif"
-        subprocess.run([
+        subprocess.run((
             "./mbs.sh",
             "gmt",
             "grdimage",
             grd_file,
             f"-C{cpt_file}",
-            f"-A{tif_file}"
-        ], stderr=subprocess.DEVNULL, check=True)
+            f"-A{tif_file}",
+            "-Q"  # Set NaN values to transparent
+        ), stderr=subprocess.DEVNULL, check=True)
 
         if not os.path.exists(tif_file):
             raise FileNotFoundError(f"TIF file not found: {tif_file}")

@@ -15,12 +15,13 @@ corrections:
   install_angle: 30.0     # Sonar installation angle in degrees
   tvg_k: 1.0              # TVG power parameter (1.0 for linear gain)
   tvg_alpha: 0.0          # TVG attenuation coefficient (0.0 for no attenuation)
+  contrast_limit: 0.5     # Adjust contrast of corrected intensities (uses an exponential scale)
   apply_water_mask: true  # Whether to mask water column
   normalize_gain: true    # Whether to normalize gain factors
 
 # MBSystem Gridding & Export
 mbsystem:
-  grid_resolution: 0.45   # In meters
+  grid_resolution: 0.03   # In meters
   epsg_code: 25831        # Target coordinate system
   clip_percent: 10        # The maximum distance from data points used for spline interpolation
   colormap: "gray"        # For a list of colormaps: https://docs.generic-mapping-tools.org/6.2/cookbook/cpts.html
