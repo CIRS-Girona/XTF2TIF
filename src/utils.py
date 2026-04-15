@@ -162,7 +162,7 @@ def inspect_xtf(file_name: str, fh: Any, packet: Any, output_dir: str):
         for i in range(fh.NumberOfSonarChannels):
             ch = fh.ChanInfo[i]
             name = ch.ChannelName.decode().strip() or f"CH_{i}"
-            freq = ch.Frequency / 1000
+            freq = ch.Frequency
             print(f"CH {i}: {name:<10} | Freq: {freq:>4.0f} kHz | Bytes/Sample: {ch.BytesPerSample}", file=f)
 
         # 3. PING & NAVIGATION DATA

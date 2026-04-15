@@ -24,7 +24,8 @@ def process_channel(
     tvg_alpha: float,
     apply_water_mask: bool,
     normalize_gain: bool,
-    is_right: bool
+    is_right: bool,
+    eps: float = 1e-6
 ) -> float:
     """Process Channel for an XTF ping"""
     ch = int(is_right)
@@ -39,7 +40,7 @@ def process_channel(
         rng = np.flip(rng)  # left side is typically reversed
 
     theta, gamma = compute_theta_gamma(rng.reshape(1, -1), np.array([altitude]))
-    lambert = 1.0 / np.clip(np.cos(theta), 1e-6, None)
+    lambert = 1.0 / np.clip(np.cos(theta), eps, None)
     Phi = beam_pattern_from_gamma(
         gamma,
         roll_deg=np.array([roll]),
@@ -54,7 +55,7 @@ def process_channel(
         gain[0, rng <= altitude] = 0.0
 
     if normalize_gain:
-        gain /= np.max(gain)
+        gain /= np.max(gain) + eps
 
     I_raw = xtf_ping.data[ch].astype(np.float64) / SCALE_FACTOR
     I_corrected = I_raw * gain[0]
